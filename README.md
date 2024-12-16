@@ -1,15 +1,15 @@
 # AI Text Summarizer
 
-This is a Flask-based AI Text Summarizer using Hugging Face Transformers. It provides:
+This is a **Streamlit-based AI Text Summarizer** powered by Hugging Face Transformers. It supports:
 1. **Abstractive Summarization** using `facebook/bart-large-cnn`.
-2. **Extractive Summarization** using DistilBERT for feature extraction.
+2. **Extractive Summarization** (feature extraction) using DistilBERT.
 3. **Text Generation** using GPT-2.
 
 ## Features
-- **Endpoint**: `/summarize`
-- **Methods**: POST
-- **Summary Types**:
-  - `abstractive`: Generate human-like summaries.
-  - `extractive`: Simplified feature extraction.
-  - `generation`: Generate additional text using GPT-2.
 
+- **User Input**: Enter a text block for summarization.
+- **Summary Types**:
+  - **Abstractive**: Generates human-like summaries.
+  - **Extractive**: Extracts features (simplified).
+  - **Text Generation**: Generates new text based on input.
+- **Real-Time Output**: Results are displayed instantly.
