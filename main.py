@@ -1,11 +1,5 @@
-# Importing Libraries
-import os
-from flask import Flask, request, jsonify, render_template
-from transformers import pipeline, AutoTokenizer, AutoModelForSeq2SeqLM
-import torch
-
-# Initialize Flask App
-app = Flask(__name__)
+import streamlit as st
+from transformers import pipeline
 
 # Transformer-based Summarizer Initialization (Abstractive Summarization)
 abstractive_summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
@@ -16,39 +10,39 @@ extractive_summarizer = pipeline("feature-extraction", model="distilbert-base-un
 # Load Transformer for additional functionality (optional text generation)
 text_generator = pipeline("text-generation", model="gpt2")
 
-@app.route('/')
-def home():
-    return render_template('index.html')
+# Streamlit App Title
+st.title("AI Text Summarizer")
 
-@app.route('/summarize', methods=['POST'])
-def summarize_text():
-    if request.method == 'POST':
-        data = request.json
-        input_text = data.get("text")
-        summary_type = data.get("type", "abstractive")
+# Input Text Area
+input_text = st.text_area("Enter the text to summarize:")
 
-        if not input_text:
-            return jsonify({"error": "No text provided."})
+# Select Summary Type
+summary_type = st.selectbox("Select the summary type:", ["abstractive", "extractive", "generation"])
 
+# Generate Summary Button
+if st.button("Summarize"):
+    if not input_text:
+        st.error("Please enter some text to summarize.")
+    else:
         try:
             if summary_type == "abstractive":
-                # Perform abstractive summarization
+                # Perform Abstractive Summarization
                 summary = abstractive_summarizer(input_text, max_length=130, min_length=30, do_sample=False)
                 output = summary[0]['summary_text']
             elif summary_type == "extractive":
-                # Perform extractive summarization (simplified feature extraction)
+                # Perform Extractive Summarization (simplified feature extraction)
                 embeddings = extractive_summarizer(input_text)
                 output = f"Extracted Features Length: {len(embeddings[0])}"
             elif summary_type == "generation":
-                # Additional feature: text generation
+                # Perform Text Generation
                 generated = text_generator(input_text, max_length=50, num_return_sequences=1)
                 output = generated[0]['generated_text']
             else:
-                return jsonify({"error": "Invalid summary type."})
+                st.error("Invalid summary type selected.")
+                output = ""
 
-            return jsonify({"summary": output})
+            # Display Output
+            st.subheader("Summary Result:")
+            st.write(output)
         except Exception as e:
-            return jsonify({"error": str(e)})
-
-if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=8080)
+            st.error(f"Error: {str(e)}")
